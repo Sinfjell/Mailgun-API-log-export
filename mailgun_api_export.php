@@ -1,6 +1,6 @@
 <?php
-$api_key = "key-c82febc9cb3ff72d34b4051292acadaa";
-$domain = "kurs.fiska.no";
+$api_key = ""; // add your mailgun api key
+$domain = ""; // add your mailgun domain
 $base_url = "https://api.eu.mailgun.net/v3/";
 
 $event_types = ["delivered", "opened", "failed"];
@@ -34,6 +34,7 @@ foreach ($event_types as $event_type) {
                 'id' => $email_ids[$email],
                 'delivered' => false,
                 'opened' => false,
+                'failed' => false
             ];
         }
 
@@ -42,17 +43,20 @@ foreach ($event_types as $event_type) {
     }
 }
 
-// Now $emails should contain all email addresses with their delivery and open statuses
+// Now $emails should contain all email addresses with their delivery, open, and fail statuses
+
+// Generate the filename with a timestamp
+$filename = 'emails_' . date('YmdHis') . '.csv';
 
 // Open a file for writing
-$file = fopen('delivered_emails.csv', 'w');
+$file = fopen($filename, 'w');
 
 // Write the headers
-fputcsv($file, ['ID', 'Email', 'Delivered', 'Opened']);
+fputcsv($file, ['ID', 'Email', 'Delivered', 'Opened', 'Failed']);
 
 // Write the data
 foreach ($emails as $email => $statuses) {
-    fputcsv($file, [$statuses['id'], $email, $statuses['delivered'] ? "yes" : "no", $statuses['opened'] ? "yes" : "no"]);
+    fputcsv($file, [$statuses['id'], $email, $statuses['delivered'] ? "yes" : "no", $statuses['opened'] ? "yes" : "no", $statuses['failed'] ? "yes" : "no"]);
 }
 
 // Close the file
